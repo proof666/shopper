@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function canAccessList(listId) {
+      return isAuthenticated() &&
+             (get(/databases/$(database)/documents/lists/$(listId)).data.ownerId == request.auth.uid ||
+              request.auth.uid in get(/databases/$(database)/documents/lists/$(listId)).data.collaborators);
+    }
+
+    // Users collection - only users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Lists collection
+    match /lists/{listId} {
+      // Read: owner or collaborator
+      allow read: if canAccessList(listId);
+
+      // Create: any authenticated user
+      allow create: if isAuthenticated();
+
+      // Update/Delete: only owner
+      allow update, delete: if isAuthenticated() &&
+                               get(/databases/$(database)/documents/lists/$(listId)).data.ownerId == request.auth.uid;
+    }
+
+    // List items collection
+    match /lists/{listId}/items/{itemId} {
+      // All operations: user must have access to the parent list
+      allow read, write: if canAccessList(listId);
+    }
+
+    // Invitations collection
+    match /invitations/{invitationId} {
+      // Read: sender or receiver
+      allow read: if isAuthenticated() &&
+                  (get(/databases/$(database)/documents/invitations/$(invitationId)).data.fromUserId == request.auth.uid ||
+                   get(/databases/$(database)/documents/invitations/$(invitationId)).data.toUserId == request.auth.uid);
+
+      // Create: any authenticated user (will be validated in app logic)
+      allow create: if isAuthenticated();
+
+      // Update: only receiver can accept/reject
+      allow update: if isAuthenticated() &&
+                    get(/databases/$(database)/documents/invitations/$(invitationId)).data.toUserId == request.auth.uid;
+
+      // Delete: sender or receiver
+      allow delete: if isAuthenticated() &&
+                    (get(/databases/$(database)/documents/invitations/$(invitationId)).data.fromUserId == request.auth.uid ||
+                     get(/databases/$(database)/documents/invitations/$(invitationId)).data.toUserId == request.auth.uid);
+    }
+  }
+}

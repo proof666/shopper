@@ -3,13 +3,13 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  // Add your Firebase config here
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id",
+  apiKey: "AIzaSyCqANEf5aVIzc9OgwsE3Oe39dfRgXZr_wE",
+  authDomain: "shopper-app-4519a.firebaseapp.com",
+  projectId: "shopper-app-4519a",
+  storageBucket: "shopper-app-4519a.firebasestorage.app",
+  messagingSenderId: "1058979770023",
+  appId: "1:1058979770023:web:bbf933065f27984f637582",
+  measurementId: "G-NBM7ZM6DGE",
 };
 
 const app = initializeApp(firebaseConfig);
