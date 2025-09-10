@@ -24,15 +24,35 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* Let app control layout; don't center the whole page which breaks full-height views on mobile */
   min-width: 320px;
   min-height: 100vh;
+  background-color: var(--bg, #242424);
+  color: var(--fg, rgba(255, 255, 255, 0.87));
+  -webkit-font-smoothing: antialiased;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+/* Responsive type adjustments for small screens */
+@media (max-width: 420px) {
+  :root {
+    /* Slightly larger base font for better legibility on mobile */
+    font-size: 110%;
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    margin: 0 0 0.5rem 0;
+  }
+
+  button {
+    padding: 0.7em 0.9em;
+    font-size: 0.95rem;
+  }
 }
 
 button {

@@ -5,6 +5,7 @@ import {
   Typography,
   CircularProgress,
   Alert,
+  Fab,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useAuthContext } from "../../shared/hooks/hook-use-auth-context.js";
@@ -65,17 +66,28 @@ export const PageLists: FC = () => {
           mb: 3,
         }}
       >
-        <Typography variant="h4" component="h1">
+        <Typography
+          variant="h4"
+          component="h1"
+          sx={{
+            fontSize: { xs: "1.6rem", sm: "2rem", md: "2.4rem" },
+            fontWeight: 600,
+          }}
+        >
           My Shopping Lists
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => setCreateDialogOpen(true)}
-          size="large"
-        >
-          New List
-        </Button>
+
+        {/* Desktop/tablet button: hide on very small screens */}
+        <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setCreateDialogOpen(true)}
+            size="large"
+          >
+            New List
+          </Button>
+        </Box>
       </Box>
 
       {error && (
@@ -91,15 +103,17 @@ export const PageLists: FC = () => {
         </Alert>
       ) : (
         <Box
-          sx={{
+          sx={(theme) => ({
             display: "grid",
             gridTemplateColumns: {
               xs: "1fr",
               sm: "repeat(2, 1fr)",
               md: "repeat(3, 1fr)",
             },
-            gap: 3,
-          }}
+            gap: { xs: 2, sm: 3 },
+            // add some bottom padding so last card isn't obscured by FAB
+            paddingBottom: { xs: theme.spacing(10), sm: 0 },
+          })}
         >
           {lists.map((list) => (
             <ListCard
@@ -117,6 +131,20 @@ export const PageLists: FC = () => {
         onClose={() => setCreateDialogOpen(false)}
         onCreate={handleCreateList}
       />
+      {/* Mobile FAB: shown only on xs screens for easier thumb access */}
+      <Fab
+        color="primary"
+        aria-label="new-list"
+        sx={{
+          position: "fixed",
+          right: 16,
+          bottom: 16,
+          display: { xs: "flex", sm: "none" },
+        }}
+        onClick={() => setCreateDialogOpen(true)}
+      >
+        <Add />
+      </Fab>
     </Box>
   );
 };

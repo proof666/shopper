@@ -40,37 +40,50 @@ export const Header: FC = () => {
     navigate("/");
   };
 
-  console.log(user.photoURL);
-
   return (
     <AppBar position="static" elevation={1}>
-      <Toolbar>
-        <Typography
-          variant="h6"
-          component="div"
-          onClick={handleHomeClick}
-          sx={{
-            flexGrow: 0,
-            mr: 2,
-            cursor: "pointer",
-            "&:hover": {
-              opacity: 0.8,
-            },
-          }}
-        >
-          Shopper
-        </Typography>
+      <Toolbar sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        {/* Left: app title */}
+        <Box sx={{ display: "flex", alignItems: "center", minWidth: 0, mr: 1 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            onClick={handleHomeClick}
+            sx={{
+              cursor: "pointer",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              fontWeight: 600,
+            }}
+          >
+            Shopper
+          </Typography>
+        </Box>
 
-        <Typography
-          variant="h6"
-          component="div"
-          sx={{ flexGrow: 1, textAlign: "center" }}
-        >
-          {pageTitle}
-        </Typography>
+        {/* Center: page title */}
+        <Box sx={{ flexGrow: 1, textAlign: "center", minWidth: 0 }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              fontSize: { xs: "1rem", sm: "1.25rem" },
+              fontWeight: 500,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {pageTitle}
+          </Typography>
+        </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <IconButton onClick={handleProfileClick} sx={{ p: 0 }}>
+        {/* Right: avatar */}
+        <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}>
+          <IconButton
+            onClick={handleProfileClick}
+            sx={{ p: 0 }}
+            aria-label="profile"
+          >
             <Avatar
               src={user?.photoURL}
               alt={user?.name}

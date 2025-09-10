@@ -7,8 +7,10 @@ import {
   TextField,
   Box,
   Button,
+  Menu,
+  MenuItem,
 } from "@mui/material";
-import { Edit, Delete, Check, Close } from "@mui/icons-material";
+import { Edit, Delete, Check, Close, MoreVert } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import type { List } from "../types/list.js";
 
@@ -49,6 +51,23 @@ export const ListCard: FC<ListCardProps> = ({ list, onUpdate, onDelete }) => {
     }
   };
 
+  // Menu state for overflow actions
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
+  const openMenu = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    setAnchorEl(e.currentTarget);
+  };
+  const closeMenu = () => setAnchorEl(null);
+
+  // MUI Menu onClose signature -> wrapper to stop propagation if possible
+  const handleMenuClose = (event: unknown) => {
+    // Try to stop propagation for events that support it (menu backdrop clicks might not)
+    const ev = event as { stopPropagation?: () => void } | undefined;
+    ev?.stopPropagation?.();
+    closeMenu();
+  };
+
   return (
     <Card
       sx={{
@@ -60,7 +79,12 @@ export const ListCard: FC<ListCardProps> = ({ list, onUpdate, onDelete }) => {
       }}
       onClick={handleCardClick}
     >
-      <CardContent>
+      <CardContent
+        sx={{
+          padding: { xs: 2.5, sm: 2 },
+          "&:last-child": { paddingBottom: 2.5 },
+        }}
+      >
         {isEditing ? (
           <Box>
             <TextField
@@ -108,7 +132,12 @@ export const ListCard: FC<ListCardProps> = ({ list, onUpdate, onDelete }) => {
           </Box>
         ) : (
           <Box>
-            <Typography variant="h6" component="h2" gutterBottom>
+            <Typography
+              variant="h6"
+              component="h2"
+              gutterBottom
+              sx={{ fontSize: { xs: "1.05rem", sm: "1.15rem" } }}
+            >
               {list.title}
             </Typography>
             {list.description && (
@@ -126,26 +155,43 @@ export const ListCard: FC<ListCardProps> = ({ list, onUpdate, onDelete }) => {
               <Typography variant="caption" color="text.secondary">
                 {list.createdAt?.toDate?.()?.toLocaleDateString()}
               </Typography>
-              <Box>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
                 <IconButton
-                  size="small"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsEditing(true);
-                  }}
+                  aria-label="more"
+                  aria-controls={menuOpen ? `menu-${list.id}` : undefined}
+                  aria-haspopup="true"
+                  onClick={openMenu}
+                  size="large"
                 >
-                  <Edit />
+                  <MoreVert />
                 </IconButton>
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(list.id);
-                  }}
+                <Menu
+                  id={`menu-${list.id}`}
+                  anchorEl={anchorEl}
+                  open={menuOpen}
+                  onClose={handleMenuClose}
+                  onClick={(e) => e.stopPropagation()}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
                 >
-                  <Delete />
-                </IconButton>
+                  <MenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeMenu();
+                      setIsEditing(true);
+                    }}
+                  >
+                    <Edit sx={{ mr: 1 }} /> Edit
+                  </MenuItem>
+                  <MenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      closeMenu();
+                      onDelete(list.id);
+                    }}
+                  >
+                    <Delete sx={{ mr: 1 }} /> Delete
+                  </MenuItem>
+                </Menu>
               </Box>
             </Box>
           </Box>
