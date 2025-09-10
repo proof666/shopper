@@ -105,21 +105,10 @@ export const useItems = (listId: string | null) => {
     itemId: string,
     updates: Partial<Pick<ListItem, "name" | "quantity" | "note" | "completed">>
   ) => {
-    const cleanUpdates: Record<string, unknown> = {};
-
-    if (updates.name !== undefined) cleanUpdates.name = updates.name;
-    if (updates.quantity !== undefined)
-      cleanUpdates.quantity = updates.quantity;
-    if (updates.note !== undefined) cleanUpdates.note = updates.note;
-    if (updates.completed !== undefined)
-      cleanUpdates.completed = updates.completed;
-
-    cleanUpdates.updatedAt = serverTimestamp();
-
     if (!listId) throw new Error("listId required");
     await updateDoc(
       doc(db, "lists", listId as string, "items", itemId),
-      cleanUpdates
+      updates
     );
   };
 

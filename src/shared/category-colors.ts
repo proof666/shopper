@@ -33,7 +33,7 @@ export function getCategoryColor(category: string): string {
     hash |= 0;
   }
   const idx = Math.abs(hash) % BASE_COLORS.length;
-  return BASE_COLORS[idx];
+  return BASE_COLORS[idx] ?? "#9e9e9e";
 }
 
 export default getCategoryColor;

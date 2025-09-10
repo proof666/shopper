@@ -168,6 +168,7 @@ export const useInvitations = (userId: string | null) => {
     const snap = await getDocs(q);
     if (snap.empty) return null;
     const docSnap = snap.docs[0];
+    if (!docSnap) return null;
     const raw = docSnap.data() as unknown as Record<string, unknown>;
     const user: User & { id: string } = {
       id: docSnap.id,

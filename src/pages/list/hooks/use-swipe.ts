@@ -11,13 +11,16 @@ export function useSwipe(onDelete?: (id: string) => void) {
   const bindTouchHandlers = useCallback(
     (id: string) => ({
       onTouchStart: (e: React.TouchEvent) => {
-        touchStartX.current = e.touches[0].clientX;
-        touchStartY.current = e.touches[0].clientY;
+        if (e.touches.length > 0 && e.touches[0]) {
+          touchStartX.current = e.touches[0].clientX;
+          touchStartY.current = e.touches[0].clientY;
+        }
         activeTouchId.current = id;
         setSwipeTranslate((s) => ({ ...s, [id]: 0 }));
       },
       onTouchMove: (e: React.TouchEvent) => {
         if (activeTouchId.current !== id) return;
+        if (!e.touches[0]) return;
         const cx = e.touches[0].clientX;
         const cy = e.touches[0].clientY;
         const dx = cx - (touchStartX.current ?? cx);

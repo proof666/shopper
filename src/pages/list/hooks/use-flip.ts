@@ -25,7 +25,7 @@ export default function useFlip<T extends { id: string }>(items: T[]) {
       const el = nodes.current[id];
       const prev = positions.current[id];
       const next = newPos[id];
-      if (!el || !prev) return;
+      if (!el || !prev || !next) return;
       const dx = prev.left - next.left;
       const dy = prev.top - next.top;
       if (dx === 0 && dy === 0) return;
