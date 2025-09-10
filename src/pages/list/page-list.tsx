@@ -1,4 +1,4 @@
-import React, { type FC } from "react";
+import { type FC } from "react";
 import { useParams } from "react-router-dom";
 
 export const PageList: FC = () => {

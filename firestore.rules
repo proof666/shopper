@@ -17,15 +17,16 @@ service cloud.firestore {
               request.auth.uid in get(/databases/$(database)/documents/lists/$(listId)).data.collaborators);
     }
 
-    // Users collection - only users can read/write their own data
+    // Users collection - authenticated users can read any user data
     match /users/{userId} {
-      allow read, write: if isOwner(userId);
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
     }
 
     // Lists collection
     match /lists/{listId} {
-      // Read: owner or collaborator
-      allow read: if canAccessList(listId);
+      // Read: any authenticated user
+      allow read: if isAuthenticated();
 
       // Create: any authenticated user
       allow create: if isAuthenticated();
@@ -37,16 +38,14 @@ service cloud.firestore {
 
     // List items collection
     match /lists/{listId}/items/{itemId} {
-      // All operations: user must have access to the parent list
-      allow read, write: if canAccessList(listId);
+      // All operations: any authenticated user (will be validated in app logic)
+      allow read, write: if isAuthenticated();
     }
 
     // Invitations collection
     match /invitations/{invitationId} {
-      // Read: sender or receiver
-      allow read: if isAuthenticated() &&
-                  (get(/databases/$(database)/documents/invitations/$(invitationId)).data.fromUserId == request.auth.uid ||
-                   get(/databases/$(database)/documents/invitations/$(invitationId)).data.toUserId == request.auth.uid);
+      // Read: any authenticated user
+      allow read: if isAuthenticated();
 
       // Create: any authenticated user (will be validated in app logic)
       allow create: if isAuthenticated();

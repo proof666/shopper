@@ -5,7 +5,9 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { CircularProgress, Box } from "@mui/material";
 import { useAuthContext } from "../../shared/hooks/hook-use-auth-context.js";
+import { Layout } from "../../shared/ui/layout.js";
 import { PageAuth } from "../../pages/auth/page-auth.js";
 import { PageProfile } from "../../pages/profile/page-profile.js";
 import { PageLists } from "../../pages/lists/page-lists.js";
@@ -19,14 +21,25 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user, loading } = useAuthContext();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress size={60} />
+      </Box>
+    );
   }
 
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
 
-  return <>{children}</>;
+  return <Layout>{children}</Layout>;
 };
 
 export const RouterApp: React.FC = () => {

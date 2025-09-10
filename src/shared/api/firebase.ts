@@ -16,3 +16,13 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const googleProvider = new GoogleAuthProvider();
+
+// Настройка Google Provider для лучшей совместимости
+googleProvider.setCustomParameters({
+  prompt: "select_account",
+});
+
+// Проверка инициализации
+console.log("Firebase initialized:", app.name);
+console.log("Auth initialized:", !!auth);
+console.log("Firestore initialized:", !!db);
