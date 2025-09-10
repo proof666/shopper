@@ -22,6 +22,7 @@ import ItemRow from "./components/item-row";
 
 import { useSuggestions } from "./hooks/use-suggestions";
 import { useSwipe } from "./hooks/use-swipe";
+import useFlip from "./hooks/use-flip";
 import { useParams } from "react-router-dom";
 import { useItems } from "../../shared/api/hook-use-items";
 import { useAuth } from "../../shared/api/hook-use-auth";
@@ -55,6 +56,7 @@ export const PageList: FC = () => {
     items,
     input
   );
+  const { setRef: flipSetRef } = useFlip(items || []);
 
   useEffect(() => {
     if (typed) setOverlayOpen(true);
@@ -149,6 +151,7 @@ export const PageList: FC = () => {
             key={it.id}
             {...bindTouchHandlers(it.id)}
             style={{ display: "block" }}
+            ref={flipSetRef(it.id)}
           >
             <ItemRow
               item={it}
