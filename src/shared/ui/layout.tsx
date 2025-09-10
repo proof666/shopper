@@ -10,7 +10,7 @@ export const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <Header />
-      <Box sx={{ flex: 1, p: 3 }}>{children}</Box>
+      <Box sx={{ flex: 1, p: 1 }}>{children}</Box>
     </Box>
   );
 };

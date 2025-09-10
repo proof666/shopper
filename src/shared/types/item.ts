@@ -5,6 +5,8 @@ export interface ListItem {
   listId: string;
   name: string;
   quantity?: string;
+  category?: string;
+  emoji?: string;
   note?: string;
   completed: boolean;
   createdAt: Timestamp;
