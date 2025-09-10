@@ -1,16 +1,18 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { ProviderTheme } from "./app/providers/provider-theme.js";
+import { ThemeModeProvider } from "./app/providers/provider-theme.js";
 import { ProviderAuth } from "./app/providers/provider-auth.js";
 import { RouterApp } from "./app/router/router-app.js";
+import { CssBaseline } from "@mui/material";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <ProviderTheme>
+    <ThemeModeProvider>
       <ProviderAuth>
+        <CssBaseline />
         <RouterApp />
       </ProviderAuth>
-    </ProviderTheme>
+    </ThemeModeProvider>
   </StrictMode>
 );

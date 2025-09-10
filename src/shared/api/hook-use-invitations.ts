@@ -185,7 +185,7 @@ export const useInvitations = (userId: string | null) => {
     error,
     createInvitation,
     updateInvitationStatus,
-  deleteInvitation,
+    deleteInvitation,
     findUserByEmail,
   };
 };
