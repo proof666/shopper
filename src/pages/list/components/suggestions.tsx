@@ -28,6 +28,8 @@ const Suggestions: FC<Props> = ({
         sx={(theme) => ({
           position: "absolute",
           top: 8,
+          width: "100%",
+          height: "100%",
           zIndex: 20,
           backgroundColor: alpha(theme.palette.background.default, 0.93),
           color: theme.palette.text.primary,
@@ -61,12 +63,12 @@ const Suggestions: FC<Props> = ({
                     <span
                       style={{
                         display: "inline-flex",
-                        gap: 8,
+                        gap: 4,
                         alignItems: "center",
                       }}
                     >
                       {s.emoji ? (
-                        <span style={{ marginRight: 6 }}>{s.emoji}</span>
+                        <span style={{ marginRight: 2 }}>{s.emoji}</span>
                       ) : null}
                       {s.name}
                     </span>
@@ -75,8 +77,6 @@ const Suggestions: FC<Props> = ({
                   sx={{
                     backgroundColor: getCategoryColor(s.category),
                     color: "#fff",
-                    px: 1.5,
-                    py: 0.5,
                     fontSize: "0.95rem",
                     borderRadius: 2,
                     boxShadow: `0 1px 4px ${alpha("#000", 0.18)}`,
@@ -95,6 +95,8 @@ const Suggestions: FC<Props> = ({
       sx={(theme) => ({
         position: "absolute",
         top: 8,
+        width: "100%",
+        height: "100%",
         zIndex: 20,
         backgroundColor: alpha(theme.palette.background.default, 0.92),
         color: theme.palette.text.primary,
@@ -113,9 +115,9 @@ const Suggestions: FC<Props> = ({
             key={cat}
             label={
               <span
-                style={{ display: "inline-flex", gap: 8, alignItems: "center" }}
+                style={{ display: "inline-flex", gap: 4, alignItems: "center" }}
               >
-                {emoji ? <span style={{ marginRight: 6 }}>{emoji}</span> : null}
+                {emoji ? <span style={{ marginRight: 2 }}>{emoji}</span> : null}
                 {cat}
               </span>
             }
@@ -123,8 +125,6 @@ const Suggestions: FC<Props> = ({
             sx={{
               backgroundColor: getCategoryColor(cat),
               color: "#fff",
-              px: 1.5,
-              py: 0.5,
               borderRadius: 2,
             }}
           />

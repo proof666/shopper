@@ -10,6 +10,7 @@ import {
   doc,
   orderBy,
   serverTimestamp,
+  or,
 } from "firebase/firestore";
 import { db } from "./firebase.js";
 import type { List } from "../types/list.js";
@@ -30,7 +31,10 @@ export const useLists = (userId: string | null) => {
     try {
       const q = query(
         collection(db, "lists"),
-        where("ownerId", "==", userId),
+        or(
+          where("ownerId", "==", userId),
+          where("collaborators", "array-contains-any", [userId])
+        ),
         orderBy("updatedAt", "desc")
       );
 

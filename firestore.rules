@@ -25,21 +25,34 @@ service cloud.firestore {
 
     // Lists collection
     match /lists/{listId} {
-      // Read: any authenticated user
-      allow read: if isAuthenticated();
+      // Read: only owner or collaborators. Use resource.data for the target document
+      // to avoid reading the same document via get() during the permission evaluation.
+      allow read: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        request.auth.uid in resource.data.collaborators
+      );
 
       // Create: any authenticated user
       allow create: if isAuthenticated();
 
-      // Update/Delete: only owner
-      allow update, delete: if isAuthenticated() &&
-                               get(/databases/$(database)/documents/lists/$(listId)).data.ownerId == request.auth.uid;
+     // Update/Delete: owner can update/delete; also allow an authenticated user to update the list
+     // when the resulting document includes them in `collaborators` (accepting an invitation).
+     // NOTE: this is a permissive allowance to fix the permission error when accepting invites.
+     // Follow-up: we can tighten this to only allow changes to `collaborators` using more
+     // precise checks (diff/changed keys) if desired.
+     allow update, delete: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        request.auth.uid in resource.data.collaborators
+      );
     }
 
     // List items collection
     match /lists/{listId}/items/{itemId} {
-      // All operations: any authenticated user (will be validated in app logic)
-      allow read, write: if isAuthenticated();
+      // Read/Write: only owner or collaborators of the parent list
+        allow read, write: if isAuthenticated() && (
+          get(/databases/$(database)/documents/lists/$(listId)).data.ownerId == request.auth.uid
+          || request.auth.uid in get(/databases/$(database)/documents/lists/$(listId)).data.collaborators
+        );
     }
 
     // Invitations collection

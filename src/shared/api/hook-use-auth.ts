@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase.js";
+import { setDoc, doc, serverTimestamp } from "firebase/firestore";
+import { db } from "./firebase";
 import type { User } from "../types/user.js";
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
-  console.log({ user });
 
   useEffect(() => {
     console.log("useAuth: 🔄 Setting up auth state listener");
@@ -15,6 +15,21 @@ export const useAuth = () => {
       auth,
       (firebaseUser) => {
         if (firebaseUser) {
+          // upsert user profile into Firestore so email lookup works
+          try {
+            void setDoc(
+              doc(db, "users", firebaseUser.uid),
+              {
+                email: firebaseUser.email || null,
+                name: firebaseUser.displayName || null,
+                photoURL: firebaseUser.photoURL || null,
+                lastSeen: serverTimestamp(),
+              },
+              { merge: true }
+            );
+          } catch (err) {
+            console.error("Failed to upsert user profile", err);
+          }
           setUser({
             id: firebaseUser.uid,
             email: firebaseUser.email!,

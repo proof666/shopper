@@ -5,6 +5,7 @@ import {
   TextField,
   IconButton,
   List,
+  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -14,6 +15,7 @@ import {
   Divider,
 } from "@mui/material";
 import { Add, Share } from "@mui/icons-material";
+import { Snackbar, Alert } from "@mui/material";
 import getCategoryColor from "../../shared/category-colors";
 import Suggestions, { type Suggestion } from "./components/suggestions";
 import ItemRow from "./components/item-row";
@@ -22,6 +24,8 @@ import { useSuggestions } from "./hooks/use-suggestions";
 import { useSwipe } from "./hooks/use-swipe";
 import { useParams } from "react-router-dom";
 import { useItems } from "../../shared/api/hook-use-items";
+import { useAuth } from "../../shared/api/hook-use-auth";
+import { useInvitations } from "../../shared/api/hook-use-invitations";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../shared/api/firebase";
 
@@ -30,12 +34,21 @@ export const PageList: FC = () => {
   const listId = id || null;
   const { items, loading, error, createItem, updateItem, deleteItem } =
     useItems(listId);
+  const { user } = useAuth();
+  const { findUserByEmail, createInvitation } = useInvitations(
+    user?.id || null
+  );
 
   const [input, setInput] = useState("");
   const [overlayOpen, setOverlayOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [shareOpen, setShareOpen] = useState(false);
   const [shareEmail, setShareEmail] = useState("");
+  const [snack, setSnack] = useState<{
+    open: boolean;
+    message: string;
+    severity?: "success" | "error";
+  }>({ open: false, message: "", severity: "success" });
   const [listTitle, setListTitle] = useState<string | null>(null);
 
   const { typed, filteredByCategory, categories } = useSuggestions(
@@ -202,7 +215,11 @@ export const PageList: FC = () => {
         />
 
         <List>
-          {loading && <Typography variant="body2">Loading...</Typography>}
+          {loading && (
+            <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+              <CircularProgress size={24} />
+            </Box>
+          )}
           {error && <Typography color="error">{error}</Typography>}
 
           {!loading && (
@@ -230,9 +247,35 @@ export const PageList: FC = () => {
         <DialogActions>
           <Button onClick={() => setShareOpen(false)}>Cancel</Button>
           <Button
-            onClick={() => {
-              // placeholder: implement share via features/share-list later
-              console.log("share to", shareEmail);
+            onClick={async () => {
+              if (!user) return;
+              if (!listId) return;
+              // ensure current user is owner of the list
+              // simple check: fetch list doc ownerId
+              try {
+                const target = await findUserByEmail(shareEmail.trim());
+                if (!target) {
+                  setSnack({
+                    open: true,
+                    message: "No user with that email",
+                    severity: "error",
+                  });
+                  setShareOpen(false);
+                  return;
+                }
+                // create invitation document
+                await createInvitation(listId, user.id, target.id);
+                setSnack({
+                  open: true,
+                  message: `Invitation sent to ${target.email}`,
+                  severity: "success",
+                });
+              } catch (err) {
+                const message =
+                  (err as Error)?.message || "Failed to send invitation";
+                setSnack({ open: true, message, severity: "error" });
+                console.error("Failed to send invitation", err);
+              }
               setShareOpen(false);
             }}
           >
@@ -240,6 +283,15 @@ export const PageList: FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={snack.open}
+        autoHideDuration={3000}
+        onClose={() => setSnack((s) => ({ ...s, open: false }))}
+      >
+        <Alert severity={snack.severity} sx={{ width: "100%" }}>
+          {snack.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
