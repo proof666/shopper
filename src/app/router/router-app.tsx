@@ -42,9 +42,12 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <Layout>{children}</Layout>;
 };
 
+const base = import.meta.env.VITE_ROUTER_BASENAME || "/";
+const basename = base.startsWith("/shopper") ? "/shopper" : undefined;
+
 export const RouterApp: React.FC = () => {
   return (
-    <Router>
+    <Router basename={basename}>
       <Routes>
         <Route path="/auth" element={<PageAuth />} />
         <Route
