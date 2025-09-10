@@ -83,9 +83,10 @@ export const CreateListDialog: FC<CreateListDialogProps> = ({
             type="submit"
             variant="contained"
             disabled={!title.trim() || loading}
+            loading={loading}
             startIcon={<Add />}
           >
-            {loading ? "Creating..." : "Create List"}
+            Create List
           </Button>
         </DialogActions>
       </form>
